@@ -6,34 +6,8 @@ import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { friendlyError } from "@/lib/utils";
+import Image from "next/image";
 
-function SegReClaimLogo() {
-  return (
-    <svg width="64" height="64" viewBox="0 0 80 80" fill="none" aria-label="SegReClaim logo">
-      <circle cx="40" cy="40" r="38" fill="#D8F3DC" />
-      <path
-        d="M40 16C26.7 16 16 26.7 16 40s10.7 24 24 24 24-10.7 24-24"
-        stroke="#2D6A4F"
-        strokeWidth="4"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path
-        d="M64 40C64 26.7 53.3 16 40 16"
-        stroke="#74C69D"
-        strokeWidth="4"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path d="M40 16 L34 24 L46 24 Z" fill="#2D6A4F" />
-      <path
-        d="M40 30 C40 30 30 40 40 50 C50 40 40 30 40 30Z"
-        fill="#2D6A4F"
-        opacity="0.7"
-      />
-    </svg>
-  );
-}
 
 export default function LoginPage() {
   const { user, loading } = useAuth();
@@ -67,7 +41,14 @@ export default function LoginPage() {
       >
         {/* Logo */}
         <div className="flex flex-col items-center gap-3">
-          <SegReClaimLogo />
+          <Image
+            src="/segreclaim-logo.png"
+            alt="SegReClaim logo"
+            width={72}
+            height={72}
+            className="rounded-full"
+            priority
+          />
           <div className="text-center">
             <h1 className="text-2xl font-bold text-[#1B2B1E] tracking-tight">
               SegReClaim

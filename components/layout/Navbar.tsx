@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Gift, Ticket, User } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
@@ -13,40 +14,6 @@ const navItems = [
   { href: "/profile", label: "Profile", icon: User },
 ];
 
-// SegReClaim logo SVG
-function Logo({ size = 28 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 48 48"
-      fill="none"
-      aria-hidden="true"
-    >
-      <circle cx="24" cy="24" r="22" fill="#D8F3DC" />
-      <path
-        d="M24 10C16.3 10 10 16.3 10 24s6.3 14 14 14 14-6.3 14-14"
-        stroke="#2D6A4F"
-        strokeWidth="3"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path
-        d="M38 24C38 16.3 31.7 10 24 10"
-        stroke="#74C69D"
-        strokeWidth="3"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path d="M24 10 L20 16 L28 16 Z" fill="#2D6A4F" />
-      <path
-        d="M24 18 C24 18 18 24 24 30 C30 24 24 18 24 18Z"
-        fill="#2D6A4F"
-        opacity="0.7"
-      />
-    </svg>
-  );
-}
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -60,7 +27,14 @@ export default function Navbar() {
       {/* ── Desktop top bar ─────────────────────────────── */}
       <header className="hidden md:flex fixed top-0 inset-x-0 z-50 h-16 items-center border-b border-[#D8F3DC] bg-[#F8F4EF]/90 backdrop-blur-sm px-6">
         <Link href="/dashboard" className="flex items-center gap-2 mr-8">
-          <Logo size={32} />
+          <Image
+            src="/segreclaim-logo.png"
+            alt="SegReClaim"
+            width={32}
+            height={32}
+            className="rounded-full"
+            priority
+          />
           <div>
             <span className="font-bold text-[#1B2B1E] text-lg leading-none">
               SegReClaim
@@ -124,4 +98,4 @@ export default function Navbar() {
   );
 }
 
-export { Logo };
+

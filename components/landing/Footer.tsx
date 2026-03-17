@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function Footer() {
   return (
     <footer
@@ -6,25 +8,13 @@ export default function Footer() {
     >
       {/* Logo + copyright */}
       <div className="flex items-center gap-3">
-        <svg
-          width="28"
-          height="28"
-          viewBox="0 0 32 32"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-        >
-          <path
-            d="M16 4C16 4 6 8 6 18C6 24.627 10.373 29 16 29C16 29 16 18 26 12C26 12 22 4 16 4Z"
-            fill="#74C69D"
-          />
-          <path
-            d="M16 29C16 29 10 22 10 18"
-            stroke="rgba(116,198,157,0.5)"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-        </svg>
+        <Image
+          src="/segreclaim-logo.png"
+          alt="SegReClaim"
+          width={28}
+          height={28}
+          className="rounded-full opacity-80"
+        />
         <span className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.6)" }}>
           SegReClaim
         </span>
