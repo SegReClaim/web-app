@@ -52,6 +52,9 @@ export default function Navbar() {
   const pathname = usePathname();
   const { userDoc } = useAuth();
 
+  // Landing page has its own navbar
+  if (pathname === "/") return null;
+
   return (
     <>
       {/* ── Desktop top bar ─────────────────────────────── */}

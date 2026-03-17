@@ -1,25 +1,44 @@
-"use client";
+import LandingNavbar from "@/components/landing/Navbar";
+import HeroSection from "@/components/landing/HeroSection";
+import HowItWorks from "@/components/landing/HowItWorks";
+import WasteTypes from "@/components/landing/WasteTypes";
+import ImpactCounter from "@/components/landing/ImpactCounter";
+import RewardsPreview from "@/components/landing/RewardsPreview";
+import FinalCTA from "@/components/landing/FinalCTA";
+import Footer from "@/components/landing/Footer";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
+export const metadata = {
+  title: "SegReClaim — Recycle. Earn. Repeat.",
+  description:
+    "Deposit recyclable waste at any SegReClaim kiosk, earn points, and redeem rewards with partner brands. Now live in Surat.",
+};
 
-export default function Home() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading) {
-      router.replace(user ? "/dashboard" : "/login");
-    }
-  }, [user, loading, router]);
-
+export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#F8F4EF] flex items-center justify-center">
-      <div className="flex flex-col items-center gap-3">
-        <div className="w-14 h-14 rounded-full bg-[#D8F3DC] animate-pulse" />
-        <p className="text-[#6B7F6E] text-sm">Loading…</p>
-      </div>
-    </div>
+    <main className="overflow-x-hidden">
+      {/* Sticky landing navbar (separate from the app navbar) */}
+      <LandingNavbar />
+
+      {/* Hero — full viewport, dark green with particles */}
+      <HeroSection />
+
+      {/* How it works — cream bg */}
+      <HowItWorks />
+
+      {/* What we accept — white bg */}
+      <WasteTypes />
+
+      {/* Impact counters — primary green bg */}
+      <ImpactCounter />
+
+      {/* Rewards preview — cream bg */}
+      <RewardsPreview />
+
+      {/* Final CTA — darkest green with particles */}
+      <FinalCTA />
+
+      {/* Footer */}
+      <Footer />
+    </main>
   );
 }
