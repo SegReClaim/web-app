@@ -224,7 +224,7 @@ export default function HeroSection() {
                 }}
               >
                 <span>♻</span>
-                <span>Now live in Surat</span>
+                <span>Now live in Ahmedabad</span>
               </m.div>
             </m.div>
 
