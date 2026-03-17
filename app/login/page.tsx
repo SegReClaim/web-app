@@ -20,18 +20,23 @@ export default function LoginPage() {
   }, [user, loading, router]);
 
   async function handleGoogleSignIn() {
-    setSigningIn(true);
+      setSigningIn(true);
     setError(null);
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-      router.replace("/dashboard");
+      // We don't manually redirect here because the AuthContext will update,
+      // and the useEffect above will handle the redirect once loading is false.
+      // This prevents a race condition with the middleware cookie.
     } catch (e) {
       setError(friendlyError(e));
-    } finally {
       setSigningIn(false);
     }
   }
+
+  // The button should show "Signing in..." while popup is active,
+  // OR if we have a user but are still waiting for AuthContext loading to finish.
+  const isPending = !!(signingIn || (user && loading));
 
   return (
     <div className="min-h-screen bg-[#F8F4EF] flex items-center justify-center p-4">
@@ -73,7 +78,7 @@ export default function LoginPage() {
         {/* Sign-in button */}
         <button
           onClick={handleGoogleSignIn}
-          disabled={signingIn}
+          disabled={isPending}
           id="google-signin-btn"
           className="w-full flex items-center justify-center gap-3 rounded-xl border-2 border-[#D8F3DC]
                      bg-white px-4 py-3 text-[#1B2B1E] font-semibold text-sm
@@ -99,7 +104,7 @@ export default function LoginPage() {
               fill="#EA4335"
             />
           </svg>
-          {signingIn ? "Signing in…" : "Continue with Google"}
+          {isPending ? "Signing in…" : "Continue with Google"}
         </button>
 
         {error && (

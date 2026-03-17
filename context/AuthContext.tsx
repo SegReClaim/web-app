@@ -10,6 +10,8 @@ import React, {
 import {
   User,
   onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence,
   Unsubscribe as AuthUnsubscribe,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
@@ -41,38 +43,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let unsubDoc: AuthUnsubscribe | null = null;
 
+    // Explicitly set persistence to surviving browser restarts
+    setPersistence(auth, browserLocalPersistence).catch((err) => {
+      console.error("Auth persistence error:", err);
+    });
+
     const unsubAuth = onAuthStateChanged(auth, async (firebaseUser) => {
-      // Clean up previous Firestore listener
-      if (unsubDoc) {
-        unsubDoc();
-        unsubDoc = null;
+      try {
+        // Clean up previous Firestore listener
+        if (unsubDoc) {
+          unsubDoc();
+          unsubDoc = null;
+        }
+
+        if (firebaseUser) {
+          setUser(firebaseUser);
+
+          // Set lightweight auth cookie for middleware route protection
+          // Extended to 1 year (31536000 seconds)
+          document.cookie =
+            "segreclaim_authed=1; path=/; max-age=31536000; SameSite=Lax";
+
+          // Ensure user doc exists (no-op if already created)
+          await createUserDoc(
+            firebaseUser.uid,
+            firebaseUser.displayName ?? "Recycler",
+            firebaseUser.phoneNumber ?? ""
+          );
+
+          // Subscribe to real-time user doc updates
+          unsubDoc = subscribeToUserDoc(firebaseUser.uid, handleUserDoc);
+        } else {
+          // Clear auth cookie on sign-out
+          document.cookie =
+            "segreclaim_authed=; path=/; max-age=0; SameSite=Lax";
+          setUser(null);
+          setUserDoc(null);
+        }
+      } catch (error) {
+        console.error("Error in onAuthStateChanged:", error);
+      } finally {
+        setLoading(false);
       }
-
-      if (firebaseUser) {
-        setUser(firebaseUser);
-
-        // Set lightweight auth cookie for middleware route protection
-        document.cookie =
-          "segreclaim_authed=1; path=/; max-age=2592000; SameSite=Lax";
-
-        // Ensure user doc exists (no-op if already created)
-        await createUserDoc(
-          firebaseUser.uid,
-          firebaseUser.displayName ?? "Recycler",
-          firebaseUser.phoneNumber ?? ""
-        );
-
-        // Subscribe to real-time user doc updates
-        unsubDoc = subscribeToUserDoc(firebaseUser.uid, handleUserDoc);
-      } else {
-        // Clear auth cookie on sign-out
-        document.cookie =
-          "segreclaim_authed=; path=/; max-age=0; SameSite=Lax";
-        setUser(null);
-        setUserDoc(null);
-      }
-
-      setLoading(false);
     });
 
     return () => {
