@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
@@ -11,13 +10,12 @@ import Image from "next/image";
 
 export default function LoginPage() {
   const { user, loading } = useAuth();
-  const router = useRouter();
   const [signingIn, setSigningIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!loading && user) router.replace("/dashboard");
-  }, [user, loading, router]);
+    if (!loading && user) window.location.href = "/dashboard";
+  }, [user, loading]);
 
   async function handleGoogleSignIn() {
       setSigningIn(true);

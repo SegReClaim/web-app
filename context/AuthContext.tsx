@@ -57,12 +57,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         if (firebaseUser) {
-          setUser(firebaseUser);
-
           // Set lightweight auth cookie for middleware route protection
-          // Extended to 1 year (31536000 seconds)
+          // BEFORE updating user state, so the cookie is already present
+          // when the login page reacts and triggers router navigation.
           document.cookie =
             "segreclaim_authed=1; path=/; max-age=31536000; SameSite=Lax";
+
+          setUser(firebaseUser);
 
           // Ensure user doc exists (no-op if already created)
           await createUserDoc(
