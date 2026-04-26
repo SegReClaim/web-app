@@ -1,9 +1,10 @@
 import { Timestamp } from "firebase/firestore";
 
-export type WasteType = "plastic" | "glass" | "aluminium" | "paper";
+export type WasteType = "plastic" | "glass" | "aluminium" | "paper" | "metal" | "general";
 export type MachineStatus = "online" | "offline" | "full" | "maintenance";
 export type SessionStatus = "pending" | "active" | "completed" | "expired";
 export type VoucherStatus = "active" | "redeemed" | "expired";
+export type RedemptionTokenStatus = "pending" | "claimed" | "redeemed" | "expired";
 
 export interface UserDoc {
   uid: string;
@@ -93,4 +94,18 @@ export interface PointRule {
   pointsPerGram: number;
   multiplier: number;
   active: boolean;
+}
+
+export interface RedemptionTokenDoc {
+  tokenId: string;
+  kioskId: string;
+  machineId: string;
+  credits: number;
+  category: WasteType;
+  weightGrams: number;
+  status: RedemptionTokenStatus;
+  userId: string | null;
+  expiresAt: Timestamp;
+  createdAt: Timestamp;
+  claimedAt?: Timestamp;
 }

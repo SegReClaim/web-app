@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Flame, Gift, Ticket, Leaf, ChevronRight, TrendingUp } from "lucide-react";
+import { Flame, Gift, Ticket, Leaf, ChevronRight, TrendingUp, QrCode } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import PageWrapper from "@/components/layout/PageWrapper";
 import PointsBadge from "@/components/ui/PointsBadge";
@@ -188,6 +188,28 @@ export default function DashboardPage() {
 
         {/* ── Quick actions ───────────────────────────── */}
         <div className="grid grid-cols-2 gap-3">
+          {/* Scan to Redeem — full-width top row */}
+          <Link
+            href="/redeem"
+            className="col-span-2 flex items-center justify-between rounded-2xl
+                       bg-gradient-to-r from-[#1B4332] to-[#2D6A4F] text-white px-5 py-4
+                       hover:from-[#152e25] hover:to-[#255c44] active:scale-95 transition-all duration-150"
+            style={{ boxShadow: "0 4px 20px rgba(45,106,79,0.3)" }}
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
+                <QrCode size={24} className="text-white" />
+              </div>
+              <div>
+                <p className="font-bold text-base">Scan to Redeem Credits</p>
+                <p className="text-xs text-white/70 mt-0.5">
+                  Got a QR code from the kiosk? Tap here to claim your credits.
+                </p>
+              </div>
+            </div>
+            <ChevronRight size={20} className="opacity-60 flex-shrink-0 ml-2" />
+          </Link>
+
           <Link
             href="/rewards"
             className="flex items-center justify-between rounded-2xl bg-[#2D6A4F] text-white px-4 py-4

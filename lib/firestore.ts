@@ -124,10 +124,21 @@ export async function linkSession(
 }
 
 // ── Machine ──────────────────────────────────────────────────────
-import { MachineDoc } from "@/types";
+import { MachineDoc, RedemptionTokenDoc } from "@/types";
 
 export async function getMachine(machineId: string): Promise<MachineDoc | null> {
   const snap = await getDoc(doc(db, "machines", machineId));
   if (!snap.exists()) return null;
   return snap.data() as MachineDoc;
 }
+
+// ── Redemption Tokens ────────────────────────────────────────────
+
+export async function getRedemptionToken(
+  tokenId: string
+): Promise<RedemptionTokenDoc | null> {
+  const snap = await getDoc(doc(db, "redemptionTokens", tokenId));
+  if (!snap.exists()) return null;
+  return snap.data() as RedemptionTokenDoc;
+}
+
