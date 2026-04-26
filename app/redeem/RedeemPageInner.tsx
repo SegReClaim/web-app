@@ -237,7 +237,7 @@ export default function RedeemPageInner() {
                 <Scanner 
                   onScan={handleScan}
                   onError={(error: unknown) => console.error(error)}
-                  components={{ audio: false, finder: true }}
+                  components={{ finder: true }}
                 />
               </div>
             </>
