@@ -10,7 +10,9 @@ import {
   Clock,
   Leaf,
   ArrowRight,
+  Camera,
 } from "lucide-react";
+import { Scanner } from "@yudiel/react-qr-scanner";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { getFunctions, httpsCallable } from "firebase/functions";
@@ -21,6 +23,7 @@ import { Unsubscribe } from "firebase/firestore";
 
 type PageState =
   | "loading"
+  | "scanning"
   | "invalid"
   | "expired"
   | "already_redeemed"
@@ -64,7 +67,7 @@ export default function RedeemPageInner() {
   // ── Validate token ─────────────────────────────────────────────
   const loadToken = useCallback(async () => {
     if (!tokenId) {
-      setPageState("invalid");
+      setPageState("scanning");
       return;
     }
     setPageState("loading");
@@ -164,6 +167,26 @@ export default function RedeemPageInner() {
     }
   }
 
+  // ── QR Scanner ────────────────────────────────────────────────
+  function handleScan(detectedCodes: { rawValue: string }[]) {
+    if (detectedCodes.length > 0) {
+      const value = detectedCodes[0].rawValue;
+      try {
+        const url = new URL(value);
+        const t = url.searchParams.get("t");
+        if (t) {
+          router.push(`/redeem?t=${t}`);
+        } else {
+          setErrorMsg("QR code does not contain a valid token.");
+          setPageState("invalid");
+        }
+      } catch (e) {
+        setErrorMsg("Invalid QR code format.");
+        setPageState("invalid");
+      }
+    }
+  }
+
   // ── Helpers ───────────────────────────────────────────────────
   function timeLeft(): string {
     if (!tokenDoc) return "";
@@ -197,6 +220,26 @@ export default function RedeemPageInner() {
             <>
               <Loader2 size={40} className="text-[#74C69D] animate-spin" />
               <p className="text-[#6B7F6E] text-sm">Verifying token…</p>
+            </>
+          )}
+
+          {/* ── Scanning ── */}
+          {pageState === "scanning" && (
+            <>
+              <Camera size={44} className="text-[#2D6A4F] mt-2" />
+              <div>
+                <p className="font-bold text-[#1B2B1E] text-lg">Scan QR Code</p>
+                <p className="text-sm text-[#6B7F6E] mt-1 mb-2">
+                  Point your camera at the SegReClaim kiosk screen to scan your redemption code.
+                </p>
+              </div>
+              <div className="w-full aspect-square overflow-hidden rounded-2xl bg-[#1B2B1E] relative border-4 border-[#D8F3DC]">
+                <Scanner 
+                  onScan={handleScan}
+                  onError={(error: unknown) => console.error(error)}
+                  components={{ audio: false, finder: true }}
+                />
+              </div>
             </>
           )}
 
