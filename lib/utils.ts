@@ -52,6 +52,8 @@ export const WASTE_COLORS: Record<WasteType, string> = {
   glass: "#8338EC",
   aluminium: "#FF6B35",
   paper: "#FB8500",
+  metal: "#9AA0A6",
+  general: "#78909C",
 };
 
 export const WASTE_BG_COLORS: Record<WasteType, string> = {
@@ -59,6 +61,8 @@ export const WASTE_BG_COLORS: Record<WasteType, string> = {
   glass: "#F0EAFF",
   aluminium: "#FFF0EA",
   paper: "#FFF5E5",
+  metal: "#F1F3F4",
+  general: "#ECEFF1",
 };
 
 export const WASTE_LABELS: Record<WasteType, string> = {
@@ -66,6 +70,8 @@ export const WASTE_LABELS: Record<WasteType, string> = {
   glass: "Glass",
   aluminium: "Aluminium",
   paper: "Paper",
+  metal: "Metal",
+  general: "General",
 };
 
 export const WASTE_EMOJIS: Record<WasteType, string> = {
@@ -73,6 +79,8 @@ export const WASTE_EMOJIS: Record<WasteType, string> = {
   glass: "🍾",
   aluminium: "🥫",
   paper: "📄",
+  metal: "🔩",
+  general: "🗑️",
 };
 
 // ── Animated counter ─────────────────────────────────────────────

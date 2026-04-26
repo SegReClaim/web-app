@@ -14,7 +14,7 @@ import { getTransactions, getMachine } from "@/lib/firestore";
 import { TransactionDoc, MachineDoc, WasteType } from "@/types";
 import { formatWeight, calculateCO2, WASTE_COLORS, WASTE_LABELS } from "@/lib/utils";
 
-const WASTE_TYPES: WasteType[] = ["plastic", "glass", "aluminium", "paper"];
+const WASTE_TYPES: WasteType[] = ["plastic", "glass", "aluminium", "paper", "metal", "general"];
 
 export default function DashboardPage() {
   const { user, userDoc, loading } = useAuth();
@@ -65,7 +65,7 @@ export default function DashboardPage() {
 
   // Per-waste-type weight
   const weightByType: Record<WasteType, number> = {
-    plastic: 0, glass: 0, aluminium: 0, paper: 0,
+    plastic: 0, glass: 0, aluminium: 0, paper: 0, metal: 0, general: 0,
   };
   for (const tx of transactions) {
     for (const item of tx.items) {
