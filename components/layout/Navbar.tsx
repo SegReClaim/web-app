@@ -3,13 +3,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Gift, Ticket, User } from "lucide-react";
+import { LayoutDashboard, Gift, Ticket, User, QrCode } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import PointsBadge from "@/components/ui/PointsBadge";
 
 const navItems = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
   { href: "/rewards", label: "Rewards", icon: Gift },
+  { href: "/redeem", label: "Scan QR", icon: QrCode },
   { href: "/vouchers", label: "Vouchers", icon: Ticket },
   { href: "/profile", label: "Profile", icon: User },
 ];
