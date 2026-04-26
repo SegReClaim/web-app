@@ -31,11 +31,10 @@ export default function LandingNavbar() {
           className="rounded-full transition-transform duration-300 group-hover:scale-105"
           priority
         />
-        <span
-          className="text-xl font-extrabold tracking-tight transition-colors duration-200"
-          style={{ color: scrolled ? "#2D6A4F" : "#ffffff" }}
-        >
-          SegReClaim
+        <span className="text-xl font-extrabold tracking-tight transition-colors duration-200">
+          <span style={{ color: scrolled ? "#1B2B1E" : "#ffffff" }}>Seg</span>
+          <span style={{ color: scrolled ? "#2D6A4F" : "#ffffff" }}>Re</span>
+          <span style={{ color: scrolled ? "#D4AF37" : "#ffffff" }}>Claim</span>
         </span>
       </Link>
 

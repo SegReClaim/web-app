@@ -25,6 +25,28 @@ export default function Navbar() {
 
   return (
     <>
+      {/* ── Mobile top bar ─────────────────────────────── */}
+      <header className="md:hidden fixed top-0 inset-x-0 z-50 h-14 flex items-center justify-between border-b border-[#D8F3DC] bg-[#F8F4EF]/95 backdrop-blur-sm px-4">
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <Image
+            src="/segreclaim-logo.png"
+            alt="SegReClaim"
+            width={28}
+            height={28}
+            className="rounded-full"
+            priority
+          />
+          <span className="font-bold text-base leading-none tracking-tight">
+            <span style={{ color: "#1B2B1E" }}>Seg</span>
+            <span style={{ color: "#2D6A4F" }}>Re</span>
+            <span style={{ color: "#D4AF37" }}>Claim</span>
+          </span>
+        </Link>
+        {userDoc && (
+          <PointsBadge points={userDoc.totalPoints} size="sm" />
+        )}
+      </header>
+
       {/* ── Desktop top bar ─────────────────────────────── */}
       <header className="hidden md:flex fixed top-0 inset-x-0 z-50 h-16 items-center border-b border-[#D8F3DC] bg-[#F8F4EF]/90 backdrop-blur-sm px-6">
         <Link href="/dashboard" className="flex items-center gap-2 mr-8">
@@ -37,8 +59,10 @@ export default function Navbar() {
             priority
           />
           <div>
-            <span className="font-bold text-[#1B2B1E] text-lg leading-none">
-              SegReClaim
+            <span className="font-bold text-lg leading-none">
+              <span style={{ color: "#1B2B1E" }}>Seg</span>
+              <span style={{ color: "#2D6A4F" }}>Re</span>
+              <span style={{ color: "#D4AF37" }}>Claim</span>
             </span>
             <span className="block text-[10px] text-[#6B7F6E] leading-none">
               Segregate · Recycle · Reward
