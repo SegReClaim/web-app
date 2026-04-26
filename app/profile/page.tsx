@@ -53,7 +53,7 @@ export default function ProfilePage() {
   const co2Saved = calculateCO2(totalWeightGrams);
 
   const weightByType: Record<WasteType, number> = {
-    plastic: 0, glass: 0, aluminium: 0, paper: 0,
+    plastic: 0, glass: 0, aluminium: 0, paper: 0, metal: 0, general: 0,
   };
   for (const tx of transactions) {
     for (const item of tx.items) {
