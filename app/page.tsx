@@ -29,7 +29,7 @@ export default function LandingPage() {
       <WasteTypes />
 
       {/* Impact counters — primary green bg */}
-      <ImpactCounter />
+      {/* <ImpactCounter /> */}
 
       {/* Rewards preview — cream bg */}
       <RewardsPreview />

@@ -20,8 +20,9 @@ export default function Navbar() {
   const pathname = usePathname();
   const { userDoc } = useAuth();
 
-  // Landing page has its own navbar
-  if (pathname === "/") return null;
+  // Landing / public pages have their own navbar
+  const PUBLIC_PATHS = ["/", "/about", "/login"];
+  if (PUBLIC_PATHS.includes(pathname)) return null;
 
   return (
     <>

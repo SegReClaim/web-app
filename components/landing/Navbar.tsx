@@ -38,7 +38,16 @@ export default function LandingNavbar() {
         </span>
       </Link>
 
-      {/* Sign in */}
+      {/* Nav links + Sign in */}
+      <div className="flex items-center gap-6">
+        <Link
+          href="/about"
+          className="text-sm font-medium transition-colors duration-200 ease-in-out"
+          style={{ color: scrolled ? "#2D6A4F" : "rgba(255,255,255,0.8)" }}
+        >
+          About
+        </Link>
+
       <Link
         href="/login"
         className="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ease-in-out"
@@ -60,6 +69,7 @@ export default function LandingNavbar() {
       >
         Sign in
       </Link>
+      </div>
     </nav>
   );
 }
