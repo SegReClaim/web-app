@@ -125,7 +125,7 @@ export default function AdminUsersPage() {
                   )}
                 </p>
                 <p className="text-xs text-[#6B7F6E] truncate">
-                  {u.email || u.phone || u.uid}
+                  {u.email || u.phone || "No email"}
                 </p>
               </div>
               <div className="hidden sm:block text-right">

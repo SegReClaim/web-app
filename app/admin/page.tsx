@@ -162,7 +162,7 @@ export default function AdminDashboardPage() {
                     {u.displayName || "Unnamed"}
                   </p>
                   <p className="text-xs text-[#6B7F6E] truncate">
-                    {u.email || u.phone || u.uid}
+                    {u.email || u.phone || "No email"}
                   </p>
                 </div>
                 <div className="text-right shrink-0">
