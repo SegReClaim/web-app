@@ -10,6 +10,7 @@ import {
   AdminSection,
 } from "./AdminField";
 import RewardPreview from "./RewardPreview";
+import ImageUploadInput from "./ImageUploadInput";
 
 interface RewardFormProps {
   data: RewardFormData;
@@ -84,12 +85,11 @@ export default function RewardForm({
             />
           </AdminField>
 
-          <AdminField label="Image URL" hint="Paste a public image URL (Storage upload coming later)">
-            <AdminInput
+          <AdminField label="Image" hint="Upload a file or paste a public image URL">
+            <ImageUploadInput
               value={data.imageUrl}
-              onChange={(e) => set("imageUrl", e.target.value)}
-              placeholder="https://…"
-              type="url"
+              onChange={(url) => set("imageUrl", url)}
+              folder="rewards"
             />
           </AdminField>
 

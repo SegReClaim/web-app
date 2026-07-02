@@ -8,6 +8,7 @@ import {
   AdminToggle,
   AdminSection,
 } from "./AdminField";
+import ImageUploadInput from "./ImageUploadInput";
 
 interface PartnerFormProps {
   data: PartnerFormData;
@@ -47,12 +48,11 @@ export default function PartnerForm({
           />
         </AdminField>
 
-        <AdminField label="Logo URL">
-          <AdminInput
+        <AdminField label="Logo" hint="Upload a file or paste a public image URL">
+          <ImageUploadInput
             value={data.logoUrl}
-            onChange={(e) => set("logoUrl", e.target.value)}
-            placeholder="https://…"
-            type="url"
+            onChange={(url) => set("logoUrl", url)}
+            folder="partners"
           />
         </AdminField>
 
