@@ -117,11 +117,15 @@ export default function AdminUsersPage() {
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-[#1B2B1E] flex items-center gap-1.5">
                   <span className="truncate">{u.displayName || "Unnamed"}</span>
-                  {(u.role === "admin" || u.role === "superadmin") && (
-                    <ShieldCheck
-                      size={15}
-                      className={`shrink-0 ${u.role === "superadmin" ? "text-[#1B4332]" : "text-[#2D6A4F]"}`}
-                    />
+                  {u.role === "superadmin" && (
+                    <span className="shrink-0 inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide bg-[#1B4332] text-[#D8F3DC] px-2 py-0.5 rounded-full">
+                      <ShieldCheck size={11} /> Superadmin
+                    </span>
+                  )}
+                  {u.role === "admin" && (
+                    <span className="shrink-0 inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide bg-[#D8F3DC] text-[#2D6A4F] px-2 py-0.5 rounded-full">
+                      <ShieldCheck size={11} /> Admin
+                    </span>
                   )}
                 </p>
                 <p className="text-xs text-[#6B7F6E] truncate">
