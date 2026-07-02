@@ -20,9 +20,9 @@ export default function Navbar() {
   const pathname = usePathname();
   const { userDoc } = useAuth();
 
-  // Landing / public pages have their own navbar
-  const PUBLIC_PATHS = ["/", "/about", "/login"];
-  if (PUBLIC_PATHS.includes(pathname)) return null;
+  // Landing / public / admin pages have their own chrome
+  const HIDDEN_NAV_PATHS = ["/", "/about", "/login"];
+  if (HIDDEN_NAV_PATHS.includes(pathname) || pathname.startsWith("/admin")) return null;
 
   return (
     <>

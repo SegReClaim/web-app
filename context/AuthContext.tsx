@@ -22,12 +22,16 @@ interface AuthContextValue {
   user: User | null;
   userDoc: UserDoc | null;
   loading: boolean;
+  isAdmin: boolean;
+  isSuperAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextValue>({
   user: null,
   userDoc: null,
   loading: true,
+  isAdmin: false,
+  isSuperAdmin: false,
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -65,11 +69,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           setUser(firebaseUser);
 
-          // Ensure user doc exists (no-op if already created)
+          // Ensure user doc exists; backfills email/photo on existing docs
           await createUserDoc(
             firebaseUser.uid,
             firebaseUser.displayName ?? "Recycler",
-            firebaseUser.phoneNumber ?? ""
+            firebaseUser.phoneNumber ?? "",
+            firebaseUser.email ?? "",
+            firebaseUser.photoURL ?? ""
           );
 
           // Subscribe to real-time user doc updates
@@ -94,8 +100,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [handleUserDoc]);
 
+  const isSuperAdmin = userDoc?.role === "superadmin";
+  const isAdmin = userDoc?.role === "admin" || isSuperAdmin;
+
   return (
-    <AuthContext.Provider value={{ user, userDoc, loading }}>
+    <AuthContext.Provider value={{ user, userDoc, loading, isAdmin, isSuperAdmin }}>
       {children}
     </AuthContext.Provider>
   );

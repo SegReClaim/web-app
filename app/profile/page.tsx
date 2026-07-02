@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { LogOut, Flame, Leaf, Recycle, Award } from "lucide-react";
+import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import PageWrapper from "@/components/layout/PageWrapper";
 import SkeletonCard from "@/components/ui/SkeletonCard";
@@ -15,7 +16,7 @@ import { calculateCO2, formatWeight, WASTE_LABELS, WASTE_COLORS } from "@/lib/ut
 const WASTE_TYPES: WasteType[] = ["plastic", "glass", "aluminium", "paper"];
 
 export default function ProfilePage() {
-  const { user, userDoc, loading } = useAuth();
+  const { user, userDoc, loading, isAdmin } = useAuth();
   const router = useRouter();
 
   const [transactions, setTransactions] = useState<TransactionDoc[]>([]);
@@ -190,6 +191,17 @@ export default function ProfilePage() {
       </div>
 
       {/* Sign out */}
+      {isAdmin && (
+        <Link
+          href="/admin"
+          className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-[#2D6A4F]
+                     text-[#2D6A4F] font-semibold py-3 text-sm mb-3
+                     hover:bg-[#D8F3DC] active:scale-95 transition-all duration-150"
+        >
+          Admin panel
+        </Link>
+      )}
+
       <button
         onClick={handleSignOut}
         disabled={signingOut}

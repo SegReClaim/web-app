@@ -8,15 +8,15 @@ import PageWrapper from "@/components/layout/PageWrapper";
 import PartnerCard from "@/components/cards/PartnerCard";
 import SkeletonCard from "@/components/ui/SkeletonCard";
 import EmptyState from "@/components/ui/EmptyState";
-import { getActivePartners } from "@/lib/firestore";
-import { PartnerDoc } from "@/types";
+import { getActivePartnersWithRewards } from "@/lib/firestore";
+import { PartnerWithRewards } from "@/types";
 import { friendlyError } from "@/lib/utils";
 
 export default function RewardsPage() {
   const { user, userDoc, loading } = useAuth();
   const router = useRouter();
 
-  const [partners, setPartners] = useState<PartnerDoc[]>([]);
+  const [partners, setPartners] = useState<PartnerWithRewards[]>([]);
   const [partnersLoading, setPartnersLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +28,7 @@ export default function RewardsPage() {
     if (!user) return;
     (async () => {
       try {
-        const data = await getActivePartners();
+        const data = await getActivePartnersWithRewards();
         setPartners(data);
       } catch (e) {
         setError(friendlyError(e));
@@ -55,7 +55,6 @@ export default function RewardsPage() {
 
   return (
     <PageWrapper>
-      {/* Header */}
       <div className="mb-5">
         <h1 className="text-2xl font-bold text-[#1B2B1E]">Rewards</h1>
         <p className="text-sm text-[#6B7F6E] mt-1">

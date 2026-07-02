@@ -47,7 +47,11 @@ if (isConfigured) {
 
 // Callable Cloud Function reference
 const claimVoucherFn = httpsCallable<
-  { partnerId: string; catalogueIndex: number },
+  {
+    rewardId?: string;
+    partnerId: string;
+    catalogueIndex?: number;
+  },
   { success: boolean; voucherId: string }
 >(functions, "claimVoucher");
 

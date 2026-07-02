@@ -137,7 +137,7 @@ const FIREBASE_ERROR_MAP: Record<string, string> = {
   "auth/user-disabled": "This account has been disabled. Please contact support.",
   "functions/unauthenticated": "You need to be logged in to do that.",
   "functions/not-found": "The requested item could not be found.",
-  "functions/resource-exhausted": "This reward is out of stock.",
+  "functions/resource-exhausted": "This reward is out of stock or you've reached the claim limit.",
   "functions/failed-precondition": "You don't have enough points for this reward.",
   "functions/internal": "Something went wrong on our end. Please try again.",
 };

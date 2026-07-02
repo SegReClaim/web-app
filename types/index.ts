@@ -5,11 +5,17 @@ export type MachineStatus = "online" | "offline" | "full" | "maintenance";
 export type SessionStatus = "pending" | "active" | "completed" | "expired";
 export type VoucherStatus = "active" | "redeemed" | "expired";
 export type RedemptionTokenStatus = "pending" | "claimed" | "redeemed" | "expired";
+export type UserRole = "user" | "admin" | "superadmin";
+export type StockMode = "limited" | "unlimited";
+export type ClaimLimitMode = "once" | "limited" | "unlimited";
 
 export interface UserDoc {
   uid: string;
   phone: string;
   displayName: string;
+  email?: string;
+  photoURL?: string;
+  role?: UserRole;
   totalPoints: number;
   lifetimePoints: number;
   currentStreak: number;
@@ -65,7 +71,9 @@ export interface VoucherDoc {
   voucherId: string;
   userId: string;
   partnerId: string;
-  partnerName?: string; // joined client-side
+  rewardId?: string;
+  partnerName?: string;
+  brandName?: string;
   code: string;
   description: string;
   pointsSpent: number;
@@ -74,6 +82,7 @@ export interface VoucherDoc {
   createdAt: Timestamp;
 }
 
+/** @deprecated Legacy nested catalogue item — use RewardDoc subcollection */
 export interface RewardCatalogueItem {
   description: string;
   pointsCost: number;
@@ -84,9 +93,58 @@ export interface RewardCatalogueItem {
 export interface PartnerDoc {
   partnerId: string;
   name: string;
+  slug?: string;
   logoUrl: string;
-  rewardCatalogue: RewardCatalogueItem[];
+  description?: string;
+  contactEmail?: string;
+  websiteUrl?: string;
   active: boolean;
+  sortOrder?: number;
+  createdAt?: Timestamp;
+  updatedAt?: Timestamp;
+  /** @deprecated Use partners/{id}/rewards subcollection */
+  rewardCatalogue?: RewardCatalogueItem[];
+}
+
+export interface RewardDoc {
+  rewardId: string;
+  partnerId: string;
+  title: string;
+  description: string;
+  imageUrl?: string;
+  brandName?: string;
+  tags?: string[];
+  pointsCost: number;
+  rupeeValue?: number;
+  stockMode: StockMode;
+  totalStock?: number;
+  remaining?: number;
+  claimLimitMode: ClaimLimitMode;
+  maxClaimsPerUser?: number;
+  active: boolean;
+  featured: boolean;
+  sortOrder: number;
+  validFrom?: Timestamp | null;
+  validUntil?: Timestamp | null;
+  voucherValidityDays: number;
+  redemptionInstructions?: string;
+  createdAt?: Timestamp;
+  updatedAt?: Timestamp;
+  createdBy?: string;
+}
+
+/** Partner with resolved rewards for display */
+export interface PartnerWithRewards extends PartnerDoc {
+  rewards: RewardDoc[];
+}
+
+export interface RewardClaimDoc {
+  claimId: string;
+  rewardId: string;
+  partnerId: string;
+  userId: string;
+  voucherId: string;
+  claimedAt: Timestamp;
 }
 
 export interface PointRule {
@@ -108,4 +166,38 @@ export interface RedemptionTokenDoc {
   expiresAt: Timestamp;
   createdAt: Timestamp;
   claimedAt?: Timestamp;
+}
+
+/** Form state for admin reward create/edit (no Timestamps) */
+export interface RewardFormData {
+  partnerId: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  brandName: string;
+  tags: string;
+  pointsCost: number;
+  rupeeValue: number | "";
+  stockMode: StockMode;
+  totalStock: number;
+  claimLimitMode: ClaimLimitMode;
+  maxClaimsPerUser: number;
+  active: boolean;
+  featured: boolean;
+  sortOrder: number;
+  voucherValidityDays: number;
+  redemptionInstructions: string;
+  validFrom: string;
+  validUntil: string;
+}
+
+export interface PartnerFormData {
+  name: string;
+  slug: string;
+  logoUrl: string;
+  description: string;
+  contactEmail: string;
+  websiteUrl: string;
+  active: boolean;
+  sortOrder: number;
 }
