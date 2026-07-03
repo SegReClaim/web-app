@@ -11,7 +11,7 @@ import Footer from "@/components/landing/Footer";
 const team = [
   {
     name: "Harshil Patel",
-    role: "Co-Founder",
+    role: "Founder",
     bio: "Passionate about building sustainable systems and scalable tech products. Harshil drives product vision and strategy at SegReClaim, ensuring the platform delivers real environmental impact at scale.",
     linkedin: "https://www.linkedin.com/in/harshil-patel-profile20/",
     image: "/harshil.png",
