@@ -10,11 +10,15 @@ import {
   Plus,
   Users,
   ChevronRight,
+  Recycle,
+  Clock,
 } from "lucide-react";
 import SkeletonCard from "@/components/ui/SkeletonCard";
 import { getAdminStats, getRecentUsers } from "@/lib/admin-firestore";
 import { friendlyError } from "@/lib/utils";
 import { UserDoc } from "@/types";
+import { getActivityCounts } from "@/lib/admin-activity";
+import ActivityHistory from "@/components/admin/ActivityHistory";
 
 function formatDate(ts?: { toDate: () => Date } | null): string {
   if (!ts) return "—";
@@ -27,17 +31,22 @@ function formatDate(ts?: { toDate: () => Date } | null): string {
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<Awaited<ReturnType<typeof getAdminStats>> | null>(null);
   const [recentUsers, setRecentUsers] = useState<UserDoc[]>([]);
+  const [activityCounts, setActivityCounts] = useState<Awaited<ReturnType<typeof getActivityCounts>> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([getAdminStats(), getRecentUsers(5)])
-      .then(([s, u]) => {
+    let cancelled = false;
+    Promise.all([getAdminStats(), getRecentUsers(5), getActivityCounts()])
+      .then(([s, u, counts]) => {
+        if (cancelled) return;
         setStats(s);
         setRecentUsers(u);
+        setActivityCounts(counts);
       })
-      .catch((e) => setError(friendlyError(e)))
-      .finally(() => setLoading(false));
+      .catch((e) => { if (!cancelled) setError(friendlyError(e)); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, []);
 
   if (loading) {
@@ -60,7 +69,9 @@ export default function AdminDashboardPage() {
     { label: "Users", value: stats?.userCount ?? 0, sub: "registered", icon: Users, href: "/admin/users" },
     { label: "Partners", value: stats?.partnerCount ?? 0, sub: `${stats?.activePartnerCount ?? 0} active`, icon: Store, href: "/admin/partners" },
     { label: "Rewards", value: stats?.rewardCount ?? 0, sub: `${stats?.activeRewardCount ?? 0} live`, icon: Gift, href: "/admin/rewards" },
-    { label: "Total claims", value: stats?.claimCount ?? 0, sub: "all time", icon: TrendingUp },
+    { label: "Reward claims", value: activityCounts?.issuedVoucherCount ?? 0, sub: "vouchers issued", icon: TrendingUp, href: "/admin/claims" },
+    { label: "Trash deposits", value: activityCounts?.depositCount ?? 0, sub: "includes donations", icon: Recycle, href: "/admin/deposits" },
+    { label: "Processing", value: activityCounts?.processingCount ?? 0, sub: "points pending", icon: Clock, href: "/admin/deposits" },
     { label: "Low stock", value: stats?.lowStockCount ?? 0, sub: "under 5 left", icon: AlertTriangle, warn: (stats?.lowStockCount ?? 0) > 0, href: "/admin/rewards" },
   ];
 
@@ -70,7 +81,7 @@ export default function AdminDashboardPage() {
         <div>
           <h1 className="text-2xl font-bold text-[#1B2B1E]">Dashboard</h1>
           <p className="text-sm text-[#6B7F6E] mt-1">
-            Overview of users, partners, rewards, and claims
+            Overview of users, recycling activity, partners, and rewards
           </p>
         </div>
         <div className="flex gap-2">
@@ -95,7 +106,7 @@ export default function AdminDashboardPage() {
         <p className="text-sm text-red-600 bg-red-50 rounded-xl px-4 py-2">{error}</p>
       )}
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {cards.map(({ label, value, sub, icon: Icon, warn, href }) => {
           const card = (
             <div
@@ -106,7 +117,7 @@ export default function AdminDashboardPage() {
                 <Icon size={18} className={warn ? "text-[#FB8500]" : "text-[#2D6A4F]"} />
               </div>
               <p className={`text-2xl font-extrabold tabular-nums ${warn ? "text-[#FB8500]" : "text-[#1B2B1E]"}`}>
-                {value}
+                {error ? "—" : value.toLocaleString("en-IN")}
               </p>
               <p className="text-xs text-[#6B7F6E]">{label}</p>
               <p className="text-[10px] text-[#74C69D] mt-0.5">{sub}</p>
@@ -121,6 +132,10 @@ export default function AdminDashboardPage() {
           );
         })}
       </div>
+
+      <section className="space-y-3">
+        <ActivityHistory mode="transactions" headingLevel={2} compact />
+      </section>
 
       {/* Recent signups */}
       <section>

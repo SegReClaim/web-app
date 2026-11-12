@@ -360,15 +360,10 @@ export async function getAdminStats(): Promise<{
 // ── Users (admin) ───────────────────────────────────────────────
 
 export async function getAllUsers(): Promise<UserDoc[]> {
-  try {
-    const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
-    const snap = await getDocs(q);
-    return snap.docs.map((d) => ({ ...d.data(), uid: d.id } as UserDoc));
-  } catch {
-    // Some legacy docs may lack createdAt — fall back to unordered fetch
-    const snap = await getDocs(collection(db, "users"));
-    return snap.docs.map((d) => ({ ...d.data(), uid: d.id } as UserDoc));
-  }
+  // orderBy silently excludes profiles without createdAt; it does not throw.
+  const snap = await getDocs(collection(db, "users"));
+  return snap.docs.map((d) => ({ ...d.data(), uid: d.id } as UserDoc))
+    .sort((a, b) => (b.createdAt?.toMillis() ?? 0) - (a.createdAt?.toMillis() ?? 0));
 }
 
 export async function getRecentUsers(max = 5): Promise<UserDoc[]> {

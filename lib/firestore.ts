@@ -36,11 +36,13 @@ export async function getUserDoc(uid: string): Promise<UserDoc | null> {
 
 export function subscribeToUserDoc(
   uid: string,
-  callback: (user: UserDoc) => void
+  callback: (user: UserDoc) => void,
+  onError?: (error: Error) => void,
 ): Unsubscribe {
   return onSnapshot(doc(db, "users", uid), (snap) => {
-    if (snap.exists()) callback(snap.data() as UserDoc);
-  });
+    if (snap.exists()) callback({ ...snap.data(), uid: snap.id } as UserDoc);
+    else onError?.(new Error("User profile could not be found."));
+  }, onError);
 }
 
 export async function createUserDoc(
@@ -268,4 +270,3 @@ export async function getRedemptionToken(
   if (!snap.exists()) return null;
   return snap.data() as RedemptionTokenDoc;
 }
-

@@ -42,10 +42,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Stable callback so the effect doesn't re-run on every render
   const handleUserDoc = useCallback((doc: UserDoc) => {
     setUserDoc(doc);
+    setLoading(false);
   }, []);
 
   useEffect(() => {
     let unsubDoc: AuthUnsubscribe | null = null;
+    let generation = 0;
+    let active = true;
 
     // Explicitly set persistence to surviving browser restarts
     setPersistence(auth, browserLocalPersistence).catch((err) => {
@@ -53,6 +56,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     const unsubAuth = onAuthStateChanged(auth, async (firebaseUser) => {
+      const current = ++generation;
+      setLoading(true);
+      setUserDoc(null);
       try {
         // Clean up previous Firestore listener
         if (unsubDoc) {
@@ -78,23 +84,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             firebaseUser.photoURL ?? ""
           );
 
+          if (!active || current !== generation) return;
+
           // Subscribe to real-time user doc updates
-          unsubDoc = subscribeToUserDoc(firebaseUser.uid, handleUserDoc);
+          // Role checks must wait for the first profile snapshot.
+          unsubDoc = subscribeToUserDoc(firebaseUser.uid, handleUserDoc, (error) => {
+            console.error("User profile subscription error:", error);
+            setLoading(false);
+          });
         } else {
           // Clear auth cookie on sign-out
           document.cookie =
             "segreclaim_authed=; path=/; max-age=0; SameSite=Lax";
           setUser(null);
           setUserDoc(null);
+          setLoading(false);
         }
       } catch (error) {
         console.error("Error in onAuthStateChanged:", error);
-      } finally {
-        setLoading(false);
+        if (active && current === generation) setLoading(false);
       }
     });
 
     return () => {
+      active = false;
       unsubAuth();
       if (unsubDoc) unsubDoc();
     };

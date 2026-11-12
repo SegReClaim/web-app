@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
+import { auth, isEmulatorMode } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { friendlyError } from "@/lib/utils";
 import Image from "next/image";
@@ -14,7 +14,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!loading && user) window.location.href = "/dashboard";
+    if (!loading && user) window.location.href = isEmulatorMode ? "/admin" : "/dashboard";
   }, [user, loading]);
 
   async function handleGoogleSignIn() {
@@ -26,6 +26,17 @@ export default function LoginPage() {
       // We don't manually redirect here because the AuthContext will update,
       // and the useEffect above will handle the redirect once loading is false.
       // This prevents a race condition with the middleware cookie.
+    } catch (e) {
+      setError(friendlyError(e));
+      setSigningIn(false);
+    }
+  }
+
+  async function handleDemoSignIn() {
+    setSigningIn(true);
+    setError(null);
+    try {
+      await signInWithEmailAndPassword(auth, "admin@example.test", "SegReClaimDemo123!");
     } catch (e) {
       setError(friendlyError(e));
       setSigningIn(false);
@@ -104,6 +115,16 @@ export default function LoginPage() {
           </svg>
           {isPending ? "Signing in…" : "Continue with Google"}
         </button>
+
+        {isEmulatorMode && (
+          <div className="w-full space-y-2">
+            <p className="text-xs text-[#526657] text-center">Local demo · illustrative activity</p>
+            <button type="button" onClick={handleDemoSignIn} disabled={isPending}
+              className="w-full rounded-xl bg-[#2D6A4F] px-4 py-3 text-sm font-semibold text-white hover:bg-[#1B4332] disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2D6A4F]">
+              {isPending ? "Signing in…" : "Open demo admin"}
+            </button>
+          </div>
+        )}
 
         {error && (
           <p className="text-xs text-red-600 text-center px-2">{error}</p>

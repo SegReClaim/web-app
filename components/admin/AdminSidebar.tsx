@@ -8,6 +8,9 @@ import {
   Store,
   Gift,
   Users,
+  ArrowLeftRight,
+  Recycle,
+  Ticket,
   ChevronLeft,
   Menu,
   X,
@@ -17,6 +20,9 @@ import { useState } from "react";
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/users", label: "Users", icon: Users },
+  { href: "/admin/transactions", label: "Transaction history", icon: ArrowLeftRight },
+  { href: "/admin/deposits", label: "Trash deposits", icon: Recycle },
+  { href: "/admin/claims", label: "Reward claims", icon: Ticket },
   { href: "/admin/partners", label: "Partners", icon: Store },
   { href: "/admin/rewards", label: "Rewards", icon: Gift },
 ];
@@ -39,6 +45,7 @@ export default function AdminSidebar() {
             key={href}
             href={href}
             onClick={() => setOpen(false)}
+            aria-current={active ? "page" : undefined}
             className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
               active
                 ? "bg-[#74C69D]/20 text-[#D8F3DC]"
@@ -72,6 +79,8 @@ export default function AdminSidebar() {
           onClick={() => setOpen(!open)}
           className="text-white p-2"
           aria-label="Toggle menu"
+          aria-expanded={open}
+          aria-controls="admin-sidebar"
         >
           {open ? <X size={22} /> : <Menu size={22} />}
         </button>
@@ -85,6 +94,7 @@ export default function AdminSidebar() {
       )}
 
       <aside
+        id="admin-sidebar"
         className={`fixed top-0 left-0 z-40 h-full w-64 bg-[#1B4332] flex flex-col transition-transform lg:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}

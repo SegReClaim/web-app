@@ -11,18 +11,16 @@ import {
   Flame,
   Coins,
   Recycle,
-  Ticket,
   ShieldCheck,
 } from "lucide-react";
 import {
   getUserAdmin,
-  getUserTransactionsAdmin,
-  getUserVouchersAdmin,
   setUserRole,
 } from "@/lib/admin-firestore";
 import { useAuth } from "@/context/AuthContext";
 import { friendlyError } from "@/lib/utils";
-import { UserDoc, UserRole, TransactionDoc, VoucherDoc } from "@/types";
+import { UserDoc, UserRole } from "@/types";
+import ActivityHistory from "@/components/admin/ActivityHistory";
 import SkeletonCard from "@/components/ui/SkeletonCard";
 
 function formatDate(ts?: { toDate: () => Date } | null): string {
@@ -34,22 +32,6 @@ function formatDate(ts?: { toDate: () => Date } | null): string {
   });
 }
 
-function formatDateTime(ts?: { toDate: () => Date } | null): string {
-  if (!ts) return "—";
-  return ts.toDate().toLocaleString("en-IN", {
-    day: "numeric",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-const voucherStatusStyles: Record<string, string> = {
-  active: "bg-[#D8F3DC] text-[#2D6A4F]",
-  redeemed: "bg-blue-50 text-blue-600",
-  expired: "bg-gray-100 text-gray-500",
-};
-
 export default function AdminUserDetailPage({
   params,
 }: {
@@ -59,8 +41,6 @@ export default function AdminUserDetailPage({
   const router = useRouter();
   const { user: authUser, isSuperAdmin } = useAuth();
   const [user, setUser] = useState<UserDoc | null>(null);
-  const [transactions, setTransactions] = useState<TransactionDoc[]>([]);
-  const [vouchers, setVouchers] = useState<VoucherDoc[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [roleSaving, setRoleSaving] = useState(false);
@@ -80,34 +60,26 @@ export default function AdminUserDetailPage({
   }
 
   useEffect(() => {
-    Promise.all([
-      getUserAdmin(id),
-      getUserTransactionsAdmin(id),
-      getUserVouchersAdmin(id),
-    ])
-      .then(([u, txs, vs]) => {
-        if (!u) {
-          router.replace("/admin/users");
-          return;
-        }
-        setUser(u);
-        setTransactions(txs);
-        setVouchers(vs);
+    let cancelled = false;
+    getUserAdmin(id)
+      .then((profile) => {
+        if (cancelled) return;
+        if (!profile) { router.replace("/admin/users"); return; }
+        setUser(profile);
       })
-      .catch((e) => setError(friendlyError(e)))
-      .finally(() => setLoading(false));
+      .catch((e) => { if (!cancelled) setError(friendlyError(e)); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, [id, router]);
 
-  if (loading || !user) {
-    return (
-      <div className="space-y-4">
-        {error && (
-          <p className="text-sm text-red-600 bg-red-50 rounded-xl px-4 py-2">{error}</p>
-        )}
-        <SkeletonCard className="h-40" />
-        <SkeletonCard className="h-64" />
-      </div>
-    );
+  if (loading) {
+    return <div className="space-y-4"><SkeletonCard className="h-40" /><SkeletonCard className="h-64" /></div>;
+  }
+  if (!user) {
+    return <div role="alert" className="space-y-3 text-sm text-[#526657]">
+      <p>{error || "This user could not be found."}</p>
+      <Link href="/admin/users" className="font-semibold text-[#2D6A4F]">Back to users</Link>
+    </div>;
   }
 
   const stats = [
@@ -225,81 +197,8 @@ export default function AdminUserDetailPage({
         ))}
       </div>
 
-      {/* Recent deposits */}
-      <section>
-        <h2 className="font-semibold text-[#1B2B1E] mb-3 flex items-center gap-2">
-          <Recycle size={17} className="text-[#2D6A4F]" /> Recent deposits
-        </h2>
-        {transactions.length === 0 ? (
-          <p className="text-sm text-[#6B7F6E]">No deposits yet.</p>
-        ) : (
-          <div className="space-y-2">
-            {transactions.map((t) => (
-              <div
-                key={t.transactionId}
-                className="rounded-xl bg-white px-4 py-3 flex items-center justify-between gap-3"
-                style={{ boxShadow: "0 1px 6px rgba(45,106,79,0.06)" }}
-              >
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-[#1B2B1E]">
-                    {t.items?.map((i) => i.wasteType).join(", ") || "Deposit"}
-                    <span className="text-[#6B7F6E] font-normal">
-                      {" "}· {((t.totalWeightGrams ?? 0) / 1000).toFixed(2)} kg
-                    </span>
-                  </p>
-                  <p className="text-xs text-[#6B7F6E]">
-                    {formatDateTime(t.createdAt)} · {t.machineId}
-                  </p>
-                </div>
-                <span className="text-sm font-bold text-[#2D6A4F] tabular-nums shrink-0">
-                  +{t.totalPoints} pts
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* Vouchers */}
-      <section>
-        <h2 className="font-semibold text-[#1B2B1E] mb-3 flex items-center gap-2">
-          <Ticket size={17} className="text-[#2D6A4F]" /> Vouchers claimed
-        </h2>
-        {vouchers.length === 0 ? (
-          <p className="text-sm text-[#6B7F6E]">No vouchers claimed yet.</p>
-        ) : (
-          <div className="space-y-2">
-            {vouchers.map((v) => (
-              <div
-                key={v.voucherId}
-                className="rounded-xl bg-white px-4 py-3 flex items-center justify-between gap-3"
-                style={{ boxShadow: "0 1px 6px rgba(45,106,79,0.06)" }}
-              >
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-[#1B2B1E] truncate">
-                    {v.description}
-                  </p>
-                  <p className="text-xs text-[#6B7F6E]">
-                    {v.partnerName || v.partnerId} · {formatDateTime(v.createdAt)} ·{" "}
-                    <span className="font-mono">{v.code}</span>
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-sm font-bold text-[#1B2B1E] tabular-nums">
-                    −{v.pointsSpent} pts
-                  </span>
-                  <span
-                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize ${
-                      voucherStatusStyles[v.status] ?? "bg-gray-100 text-gray-500"
-                    }`}
-                  >
-                    {v.status}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+      <section className="space-y-3">
+        <ActivityHistory key={id} mode="transactions" userId={id} />
       </section>
     </div>
   );

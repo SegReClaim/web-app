@@ -6,7 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:activity": "node --test scripts/test-admin-activity-model.mjs",
+    "demo:emulators": "powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/start-demo.ps1",
+    "demo:seed": "node scripts/seed-demo.mjs --with-admin",
+    "demo:check": "node --test scripts/demo-data.test.mjs",
+    "demo:dev": "node scripts/start-demo-app.mjs"
   },
   "dependencies": {
     "@tsparticles/engine": "^3.9.1",
